@@ -2,7 +2,6 @@ const express = require(`express`);
 const app = express();
 
 app.use((request,response,next)=>{
-  console.log('Middleware ejecutado');
   request.timestamp = new Date().toLocaleString();
   next();
 });
@@ -31,13 +30,23 @@ const persons = [
 ];
 
 
-app.get(`/`,(request,response)=>{
-    response.send(`<h1>Servidor en funcionamiento</h1>`);
-    console.log("Alguna cosa funciona");
+
+app.get(`/api/persons/:id`,(request,response)=>{
+  const id = parseInt(request.params.id);
+  const data = persons.find(info => info.id === id);
+  if (data){
+    response.json(data);
+  }
+  else{
+    response.statusMessage="The id was not found"
+    response.status(404).end();
+    
+  }
+
 })
 
 app.get(`/api/persons`,(request,response)=>{
-    response.json(persons);
+  response.json(persons);
 })
 
 app.get(`/info`,(request,response)=>{
@@ -45,6 +54,10 @@ app.get(`/info`,(request,response)=>{
   response.send(`<h1>Esta agenda tiene ${numero} contactos...  La hora ${request.timestamp}</h1>`);
 })
 
+app.get(`/`,(request,response)=>{
+    response.send(`<h1>Servidor en funcionamiento</h1>`);
+    console.log("Alguna cosa funciona");
+})
 
 const PORT = 3001;
 app.listen(PORT, ()=>{
