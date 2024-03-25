@@ -6,7 +6,7 @@ app.use((request,response,next)=>{
   next();
 });
 
-const persons = [
+let persons = [
     { 
       "id": 1,
       "name": "Arto Hellas", 
@@ -29,7 +29,13 @@ const persons = [
     }
 ];
 
+app.delete(`/api/persons/:id`,(request,response)=>{
+  const id = parseInt(request.params.id);
+  persons = persons.filter(info => info.id !== id);
+  response.status(204).end();
+  console.log(persons);
 
+})
 
 app.get(`/api/persons/:id`,(request,response)=>{
   const id = parseInt(request.params.id);
