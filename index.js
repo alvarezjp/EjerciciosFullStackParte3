@@ -5,6 +5,7 @@ app.use((request,response,next)=>{
   request.timestamp = new Date().toLocaleString();
   next();
 });
+app.use(express.json());
 
 let persons = [
     { 
@@ -28,6 +29,17 @@ let persons = [
       "number": "39-23-6423122"
     }
 ];
+
+app.post(`/api/persons`,(request,response)=>{
+  const {name,number} = request.body;
+  const id = Math.floor(Math.random()*1000);
+  const contenido = {
+    name,
+    number,
+    id
+  }
+  console.log(contenido);
+})
 
 app.delete(`/api/persons/:id`,(request,response)=>{
   const id = parseInt(request.params.id);
