@@ -1,4 +1,5 @@
 const express = require(`express`);
+const morgan = require(`morgan`);
 const app = express();
 
 app.use((request, response, next) => {
@@ -6,6 +7,16 @@ app.use((request, response, next) => {
   next();
 });
 app.use(express.json());
+
+morgan.token('bodyPost', (req) => {
+  if (req.method === 'POST') {
+      return JSON.stringify(req.body); // Recupera los datos de la solicitud POST como JSON
+  } else {
+      return 'vacio'; // Devuelve una cadena vacía si no es una solicitud POST
+  }
+});
+
+app.use(morgan(`:method :url :status :res[content-length] - :response-time ms :bodyPost`));
 
 let persons = [
   {
@@ -87,6 +98,12 @@ app.get(`/`, (request, response) => {
   response.send(`<h1>Servidor en funcionamiento</h1>`);
   console.log("Alguna cosa funciona");
 });
+
+const unknownEndPoint = (req, res) => {
+  res.status(404).send({ error: "unknown endpoint" });
+};
+
+app.use(unknownEndPoint);
 
 const PORT = 3001;
 app.listen(PORT, () => {
