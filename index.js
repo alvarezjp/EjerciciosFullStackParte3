@@ -99,7 +99,7 @@ app.get(`/info`, (request, response) => {
 
 app.get(`/`, (request, response) => {
   response.send(`<h1>Servidor en funcionamiento</h1>`);
-  console.log("Alguna cosa funciona");
+  console.log("Esto si se ejecuto");
 });
 
 const unknownEndPoint = (req, res) => {
@@ -108,7 +108,7 @@ const unknownEndPoint = (req, res) => {
 
 app.use(unknownEndPoint);
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
