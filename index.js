@@ -3,6 +3,7 @@ const morgan = require(`morgan`);
 const cors = require(`cors`);
 const app = express();
 const Phone = require(`./model/phone`);
+const phone = require("./model/phone");
 
 app.use(cors()); // permite la solicitud desde cualquier direccion url
 app.use(express.static(`dist`)); // permite
@@ -56,25 +57,26 @@ app.use(
 
 app.post(`/api/persons`, (request, response) => {
   const { name, number } = request.body;
-  const namesPersons = persons.some((info) => info.name === name);
+  // const namesPersons = persons.some((info) => info.name === name);
 
   if (!name || !number) {
     console.log("falta informacion");
     return response.status(400).json({ error: "content missing" });
   }
 
-  if (namesPersons) {
-    return response.status(400).json({ error: "name must be unique" });
-  } else {
-    const id = Math.floor(Math.random() * 1000);
-    const newData = {
-      id,
+  // if (namesPersons) {
+  //   return response.status(400).json({ error: "name must be unique" });
+  // }
+  else {
+    const phone = new Phone({
       name,
       number,
-    };
-    persons = persons.concat(newData);
-    console.log(newData);
-    response.json(newData);
+    });
+
+    phone.save().then((result) => {
+      console.log(phone);
+      response.json(phone);
+    });
   }
 });
 
@@ -103,10 +105,12 @@ app.get(`/api/persons`, (request, response) => {
 });
 
 app.get(`/info`, (request, response) => {
-  const numero = persons.length;
-  response.send(
-    `<h1>Esta agenda tiene ${numero} contactos...  La hora ${request.timestamp}</h1>`
-  );
+  Phone.find({}).then((result) => {
+    const numero = result.length;
+    response.send(
+      `<h1>Esta agenda tiene ${numero} contactos...  Se realizo la consulta el: ${request.timestamp}</h1>`
+    );
+  });
 });
 
 app.get(`/`, (request, response) => {
@@ -120,7 +124,7 @@ const unknownEndPoint = (req, res) => {
 
 app.use(unknownEndPoint);
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
