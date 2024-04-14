@@ -2,52 +2,57 @@ const express = require(`express`);
 const morgan = require(`morgan`);
 const cors = require(`cors`);
 const app = express();
+const Phone = require(`./model/phone`);
 
-app.use(cors());
-app.use(express.static(`dist`))
+app.use(cors()); // permite la solicitud desde cualquier direccion url
+app.use(express.static(`dist`)); // permite
 app.use((request, response, next) => {
   request.timestamp = new Date().toLocaleString();
   next();
 });
 app.use(express.json());
 
-morgan.token('bodyPost', (req) => {
-  if (req.method === 'POST') {
-      return JSON.stringify(req.body); // Recupera los datos de la solicitud POST como JSON
+morgan.token("bodyPost", (req) => {
+  if (req.method === "POST") {
+    return JSON.stringify(req.body); // Recupera los datos de la solicitud POST como JSON
   } else {
-      return 'vacio'; // Devuelve una cadena vacía si no es una solicitud POST
+    return "vacio"; // Devuelve una cadena vacía si no es una solicitud POST
   }
 });
 
-app.use(morgan(`:method :url :status :res[content-length] - :response-time ms :bodyPost`));
+app.use(
+  morgan(
+    `:method :url :status :res[content-length] - :response-time ms :bodyPost`
+  )
+);
 
-let persons = [
-  {
-    id: 1,
-    name: "Arto Hellas",
-    number: "040-123456",
-  },
-  {
-    id: 2,
-    name: "Ada Lovelace",
-    number: "39-44-5323523",
-  },
-  {
-    id: 3,
-    name: "Dan Abramov",
-    number: "12-43-234345",
-  },
-  {
-    id: 4,
-    name: "Mary Poppendieck",
-    number: "39-23-6423122",
-  },
-  {
-    id: 4,
-    name: "Este servidor si es el correcto",
-    number: "11-11-1111-9876",
-  },
-];
+// let persons = [
+//   {
+//     id: 1,
+//     name: "Arto Hellas",
+//     number: "040-123456",
+//   },
+//   {
+//     id: 2,
+//     name: "Ada Lovelace",
+//     number: "39-44-5323523",
+//   },
+//   {
+//     id: 3,
+//     name: "Dan Abramov",
+//     number: "12-43-234345",
+//   },
+//   {
+//     id: 4,
+//     name: "Mary Poppendieck",
+//     number: "39-23-6423122",
+//   },
+//   {
+//     id: 4,
+//     name: "Este servidor si es el correcto",
+//     number: "11-11-1111-9876",
+//   },
+// ];
 
 app.post(`/api/persons`, (request, response) => {
   const { name, number } = request.body;
@@ -92,7 +97,9 @@ app.get(`/api/persons/:id`, (request, response) => {
 });
 
 app.get(`/api/persons`, (request, response) => {
-  response.json(persons);
+  Phone.find({}).then((phones) => {
+    response.json(phones);
+  });
 });
 
 app.get(`/info`, (request, response) => {
@@ -113,7 +120,7 @@ const unknownEndPoint = (req, res) => {
 
 app.use(unknownEndPoint);
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

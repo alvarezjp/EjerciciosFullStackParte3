@@ -25,6 +25,7 @@ const phone = new Phone({
   phone: numberInt,
 });
 
+
 if (process.argv.length == 2) {
   Phone.find({}).then((result) => {
     result.forEach((phone) => {
